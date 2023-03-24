@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
+using System.Collections.Generic;      // LIST
 
 namespace SpaceWarGame_2J.Classes
 {
@@ -12,12 +13,32 @@ namespace SpaceWarGame_2J.Classes
         private Texture2D texture;
         private float speed;
 
+        private Rectangle collision;
+
+        // weapon
+        List<Bullet> bulletList = new List<Bullet>();
+        int time = 0;
+        int duration = 30;   // через сколько итераций вылетает пулька 500 мс
+
+        // properties
+        public Rectangle Collision
+        {
+            get { return collision; }
+        }
+
+        public List<Bullet> BulletList
+        {
+            get { return bulletList; }
+        }
+
+
         // constructors
         public Player()
         {
             position = new Vector2(350, 400);
             texture = null;
             speed = 5;
+            
         }
 
         // methods
@@ -29,10 +50,19 @@ namespace SpaceWarGame_2J.Classes
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(texture, position, Color.White);
+
+            for (int i = 0; i < bulletList.Count; i++)
+            {
+                bulletList[i].Draw(spriteBatch);
+            }
         }
 
-        public void Update()
+        public void Update(ContentManager manager)
         {
+            collision =
+                new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
+
+
             #region Управление
 
             KeyboardState state = Keyboard.GetState();
@@ -77,6 +107,31 @@ namespace SpaceWarGame_2J.Classes
             if (position.Y + texture.Height > 600)
             {
                 position.Y = 600 - texture.Height;
+            }
+
+
+            // weapon
+
+            time++;
+
+            if (duration == time)
+            {
+                Bullet bullet = new Bullet(position);
+                bullet.LoadContent(manager);
+                bulletList.Add(bullet);
+
+                time = 0;
+            }
+
+            for (int i = 0; i < bulletList.Count; i++)
+            {
+                bulletList[i].Update();
+
+                if (bulletList[i].Position.Y < -50)
+                {
+                    bulletList.RemoveAt(i);
+                    i--;
+                }
             }
         }
     }
