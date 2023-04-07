@@ -12,6 +12,13 @@ namespace SpaceWarGame_2J.Classes
         private Texture2D texture;
         private float speed;
         private Rectangle collision;
+        private bool isVisible = true;
+
+        public bool IsVisible
+        {
+            get { return isVisible; }
+            set { isVisible = value; }
+        }
 
         public Rectangle Collision
         {

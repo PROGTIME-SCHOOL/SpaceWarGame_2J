@@ -14,13 +14,16 @@ namespace SpaceWarGame_2J;
 public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
-    private SpriteBatch _spriteBatch;         // художник 
+    private SpriteBatch _spriteBatch;         // художник
+
+    private GameMode gameMode = GameMode.Menu;
 
     private Player player;
     private Space space;
 
     private List<Asteroid> asteroids = new List<Asteroid>();
-    
+
+    private List<Explosion> explosions = new List<Explosion>();
 
     public Game1()
     {
@@ -50,6 +53,8 @@ public class Game1 : Game
 
         player.LoadContent(Content);
         space.LoadContent(Content);
+
+
     }
 
     protected override void Update(GameTime gameTime)
@@ -58,9 +63,126 @@ public class Game1 : Game
             Exit();
 
         // TODO: Add your update logic here
-        player.Update(Content);
-        space.Update();
 
+
+        switch (gameMode)
+        {
+            case GameMode.Menu:
+                break;
+
+            case GameMode.Play:
+                player.Update(Content);
+                space.Update();
+                UpdateExplosions();
+                UpdateAsteroids();
+                UpdateCollision();
+                break;
+
+            case GameMode.Pause:
+                break;
+
+            case GameMode.End:
+                break;
+        }
+
+
+        
+
+
+        base.Update(gameTime);
+    }
+
+    protected override void Draw(GameTime gameTime)
+    {
+        GraphicsDevice.Clear(Color.CornflowerBlue);
+
+        // TODO: Add your drawing code here
+
+        _spriteBatch.Begin();
+
+        switch (gameMode)
+        {
+            case GameMode.Menu:
+                break;
+
+            case GameMode.Play:
+                space.Draw(_spriteBatch);
+                player.Draw(_spriteBatch);
+
+                for (int i = 0; i < asteroids.Count; i++)
+                {
+                    asteroids[i].Draw(_spriteBatch);
+                }
+
+                for (int i = 0; i < explosions.Count; i++)
+                {
+                    explosions[i].Draw(_spriteBatch);
+                }
+                break;
+
+            case GameMode.Pause:
+                break;
+
+            case GameMode.End:
+                break;
+        }
+
+        _spriteBatch.End();
+
+        base.Draw(gameTime);
+    }
+
+
+    private void UpdateCollision()
+    {
+        // COLLISION
+        for (int i = 0; i < asteroids.Count; i++)
+        {
+            // астеройд столкнулся с игроком3
+            if (player.Collision.Intersects(asteroids[i].Collision))
+            {
+                Explosion explosion = new Explosion(asteroids[i].Position);
+                explosion.LoadContent(Content);
+                explosions.Add(explosion);
+
+                asteroids[i].IsVisible = false;
+            }
+
+            // астеройд столкнулся с пулькой
+            for (int k = 0; k < player.BulletList.Count; k++)
+            {
+                if (asteroids[i].Collision.Intersects(player.BulletList[k].Collision))
+                {
+                    Explosion explosion = new Explosion(asteroids[i].Position);
+                    explosion.LoadContent(Content);
+                    explosions.Add(explosion);
+
+                    asteroids[i].IsVisible = false;
+
+                    player.BulletList.RemoveAt(k);
+                    //k--;
+                }
+            }
+        }
+    }
+
+    private void UpdateExplosions()
+    {
+        // explosions
+        for (int i = 0; i < explosions.Count; i++)
+        {
+            explosions[i].Update();
+
+            if (explosions[i].IsVisible == false)
+            {
+                explosions.RemoveAt(i);
+                i--;
+            }
+        }
+    }
+
+    private void UpdateAsteroids()
+    {
         if (asteroids.Count < 10)
         {
             Random random = new Random();
@@ -76,7 +198,6 @@ public class Game1 : Game
             asteroids.Add(asteroid);
         }
 
-
         for (int i = 0; i < asteroids.Count; i++)
         {
             asteroids[i].Update();
@@ -84,52 +205,14 @@ public class Game1 : Game
             // астеройд улетел
             if (asteroids[i].Position.Y > 600)
             {
-                asteroids.RemoveAt(i);  // удаление по индексу
+                asteroids[i].IsVisible = false;
             }
 
-            // астеройд столкнулся с игроком
-            if (player.Collision.Intersects(asteroids[i].Collision))
+            if (asteroids[i].IsVisible == false)
             {
-                asteroids.Remove(asteroids[i]);  // удаление по reference
-            }
-
-            // астеройд столкнулся с пулькой
-            for (int k = 0; k < player.BulletList.Count; k++)
-            {
-                if (asteroids[i].Collision.Intersects(player.BulletList[k].Collision))
-                {
-                    asteroids.RemoveAt(i);
-                    i--;
-
-                    player.BulletList.RemoveAt(k);
-                    k--;
-                }
+                asteroids.RemoveAt(i);
+                i--;
             }
         }
-
-        base.Update(gameTime);
-    }
-
-    protected override void Draw(GameTime gameTime)
-    {
-        GraphicsDevice.Clear(Color.CornflowerBlue);
-
-        // TODO: Add your drawing code here
-
-        _spriteBatch.Begin();
-
-        space.Draw(_spriteBatch);
-        player.Draw(_spriteBatch);
-
-
-        for (int i = 0; i < asteroids.Count; i++)
-        {
-            asteroids[i].Draw(_spriteBatch);
-        }
-        
-
-        _spriteBatch.End();
-
-        base.Draw(gameTime);
     }
 }
