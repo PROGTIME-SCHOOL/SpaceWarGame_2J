@@ -4,7 +4,7 @@ namespace SpaceWarGame_2J.Classes
 {
 	public enum GameMode
 	{
-		Menu, Play, Pause, End
+		Menu, Play, Pause, End, Exit
 	}
 }
 

@@ -8,6 +8,7 @@ using System.Collections.Generic;    // LIST
 using Microsoft.Xna.Framework.Content;   // для тетушки Контент 0_0
 
 using SpaceWarGame_2J.Classes;
+using SpaceWarGame_2J.Classes.Elements;
 
 namespace SpaceWarGame_2J;
 
@@ -16,7 +17,7 @@ public class Game1 : Game
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;         // художник
 
-    private GameMode gameMode = GameMode.Menu;
+    public static GameMode gameMode = GameMode.Play;
 
     private Player player;
     private Space space;
@@ -24,6 +25,12 @@ public class Game1 : Game
     private List<Asteroid> asteroids = new List<Asteroid>();
 
     private List<Explosion> explosions = new List<Explosion>();
+
+    private Label label = new Label("SpaceWarGame v 1.0", new Vector2(10, 570), Color.White);
+
+    private Menu menu = new Menu();
+
+    private HUD hud = new HUD();
 
     public Game1()
     {
@@ -54,7 +61,11 @@ public class Game1 : Game
         player.LoadContent(Content);
         space.LoadContent(Content);
 
+        label.LoadContent(Content);
 
+        menu.LoadContent(Content);
+
+        hud.LoadContent(Content);
     }
 
     protected override void Update(GameTime gameTime)
@@ -68,6 +79,8 @@ public class Game1 : Game
         switch (gameMode)
         {
             case GameMode.Menu:
+                space.Update();
+                menu.Update();
                 break;
 
             case GameMode.Play:
@@ -76,12 +89,17 @@ public class Game1 : Game
                 UpdateExplosions();
                 UpdateAsteroids();
                 UpdateCollision();
+                hud.Update();
                 break;
 
             case GameMode.Pause:
                 break;
 
             case GameMode.End:
+                break;
+
+            case GameMode.Exit:
+                Exit();
                 break;
         }
 
@@ -103,6 +121,8 @@ public class Game1 : Game
         switch (gameMode)
         {
             case GameMode.Menu:
+                space.Draw(_spriteBatch);
+                menu.Draw(_spriteBatch);
                 break;
 
             case GameMode.Play:
@@ -118,6 +138,11 @@ public class Game1 : Game
                 {
                     explosions[i].Draw(_spriteBatch);
                 }
+
+                label.Draw(_spriteBatch);
+
+                hud.Draw(_spriteBatch);
+
                 break;
 
             case GameMode.Pause:
@@ -138,7 +163,7 @@ public class Game1 : Game
         // COLLISION
         for (int i = 0; i < asteroids.Count; i++)
         {
-            // астеройд столкнулся с игроком3
+            // астеройд столкнулся с игроком
             if (player.Collision.Intersects(asteroids[i].Collision))
             {
                 Explosion explosion = new Explosion(asteroids[i].Position);
@@ -146,6 +171,8 @@ public class Game1 : Game
                 explosions.Add(explosion);
 
                 asteroids[i].IsVisible = false;
+
+                hud.UpdateUI(1);
             }
 
             // астеройд столкнулся с пулькой
