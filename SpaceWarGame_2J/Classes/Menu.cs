@@ -35,7 +35,7 @@ namespace SpaceWarGame_2J.Classes
 			}
 		}
 
-		public void Update()
+		public void Update(Game1 game1)
 		{
 			keyboardState = Keyboard.GetState();
 
@@ -67,6 +67,7 @@ namespace SpaceWarGame_2J.Classes
 				{
 					case 0:             // play
 						Game1.gameMode = GameMode.Play;
+						game1.Reset();
 						break;
                     case 1:				// settings
                         break;

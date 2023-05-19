@@ -11,7 +11,7 @@ namespace SpaceWarGame_2J.Classes.Elements
 		private SpriteFont spriteFont;
 		private Vector2 position;
 		private Color color;
-		private string text;
+		public string text;
 
 		public Color Color { get { return color; } set { color = value; } }
 

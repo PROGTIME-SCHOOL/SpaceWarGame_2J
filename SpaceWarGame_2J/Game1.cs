@@ -17,7 +17,7 @@ public class Game1 : Game
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;         // художник
 
-    public static GameMode gameMode = GameMode.Play;
+    public static GameMode gameMode = GameMode.End;
 
     private Player player;
     private Space space;
@@ -31,6 +31,7 @@ public class Game1 : Game
     private Menu menu = new Menu();
 
     private HUD hud = new HUD();
+    private ScreenEnd screenEnd = new ScreenEnd();
 
     public Game1()
     {
@@ -40,6 +41,8 @@ public class Game1 : Game
 
         _graphics.PreferredBackBufferWidth = 800;
         _graphics.PreferredBackBufferHeight = 600;
+
+        //_graphics.IsFullScreen = true;
     }
 
     protected override void Initialize()
@@ -66,6 +69,8 @@ public class Game1 : Game
         menu.LoadContent(Content);
 
         hud.LoadContent(Content);
+        screenEnd.LoadContent(Content);
+
     }
 
     protected override void Update(GameTime gameTime)
@@ -76,11 +81,14 @@ public class Game1 : Game
         // TODO: Add your update logic here
 
 
+        
+
+
         switch (gameMode)
         {
             case GameMode.Menu:
                 space.Update();
-                menu.Update();
+                menu.Update(this);
                 break;
 
             case GameMode.Play:
@@ -90,12 +98,20 @@ public class Game1 : Game
                 UpdateAsteroids();
                 UpdateCollision();
                 hud.Update();
+
+                if (!player.IsVisible)
+                {
+                    gameMode = GameMode.End;
+                    screenEnd.SetScore(player.Score);   // на другой экран передаем score
+                }
+
                 break;
 
             case GameMode.Pause:
                 break;
 
             case GameMode.End:
+                screenEnd.Update();
                 break;
 
             case GameMode.Exit:
@@ -112,7 +128,7 @@ public class Game1 : Game
 
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(Color.CornflowerBlue);
+        GraphicsDevice.Clear(Color.Orange);
 
         // TODO: Add your drawing code here
 
@@ -149,6 +165,10 @@ public class Game1 : Game
                 break;
 
             case GameMode.End:
+
+                space.Draw(_spriteBatch);
+                screenEnd.Draw(_spriteBatch);
+
                 break;
         }
 
@@ -172,7 +192,8 @@ public class Game1 : Game
 
                 asteroids[i].IsVisible = false;
 
-                hud.UpdateUI(1);
+                player.Damage();
+                hud.UpdateUI(player.Health);
             }
 
             // астеройд столкнулся с пулькой
@@ -187,6 +208,8 @@ public class Game1 : Game
                     asteroids[i].IsVisible = false;
 
                     player.BulletList.RemoveAt(k);
+
+                    player.Score++;
                     //k--;
                 }
             }
@@ -241,5 +264,13 @@ public class Game1 : Game
                 i--;
             }
         }
+    }
+
+    public void Reset()
+    {
+        player.Reset();
+        hud.UpdateUI(player.Health);
+        asteroids.Clear();
+        explosions.Clear();
     }
 }

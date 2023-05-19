@@ -11,11 +11,14 @@ namespace SpaceWarGame_2J.Classes
 	public class HUD   // Head Up Display
 	{
 		private HealthBar healthBar;
+		
+		private Label label;
 
 		public HUD()
 		{
 			healthBar = new HealthBar();
 
+			label = new Label("uu", new Vector2(800, 0), Color.Orange);
 			//healthBar.Value = 3;
 		}
 

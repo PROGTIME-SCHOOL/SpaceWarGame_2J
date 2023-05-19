@@ -12,6 +12,9 @@ namespace SpaceWarGame_2J.Classes
         private Vector2 position;
         private Texture2D texture;
         private float speed;
+        private int health = 10;
+        private bool isVisible = true;
+        private int score = 0;
 
         private Rectangle collision;
 
@@ -21,6 +24,16 @@ namespace SpaceWarGame_2J.Classes
         int duration = 30;   // через сколько итераций вылетает пулька 500 мс
 
         // properties
+
+        public int Score
+        {
+            get { return score; }
+            set { score = value; }
+        }
+
+        public int Health { get { return health; } }
+        public bool IsVisible { get { return isVisible; } }
+
         public Rectangle Collision
         {
             get { return collision; }
@@ -133,6 +146,27 @@ namespace SpaceWarGame_2J.Classes
                     i--;
                 }
             }
+        }
+
+        public void Damage()
+        {
+            health--;
+
+            if (health < 0)
+            {
+                health = 0;
+
+                isVisible = false;
+            }
+        }
+
+        public void Reset()
+        {
+            health = 10;
+            position = new Vector2(350, 400);
+            isVisible = true;
+            bulletList.Clear();
+            score = 0;
         }
     }
 }

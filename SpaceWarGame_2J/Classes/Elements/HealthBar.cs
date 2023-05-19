@@ -24,10 +24,10 @@ namespace SpaceWarGame_2J.Classes.Elements
 
 		public HealthBar()
 		{
-			position = new Vector2(0, 0);
+			position = new Vector2(10, 10);
 			width = 200;
 			height = 30;
-			value = 10;
+			value = 11;
 
 			widthOneSection = width / value;
         }
