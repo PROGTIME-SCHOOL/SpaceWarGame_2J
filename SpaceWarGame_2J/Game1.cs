@@ -10,6 +10,8 @@ using Microsoft.Xna.Framework.Content;   // для тетушки Контент
 using SpaceWarGame_2J.Classes;
 using SpaceWarGame_2J.Classes.Elements;
 
+using System.IO;    // files
+
 namespace SpaceWarGame_2J;
 
 public class Game1 : Game
@@ -92,18 +94,7 @@ public class Game1 : Game
                 break;
 
             case GameMode.Play:
-                player.Update(Content);
-                space.Update();
-                UpdateExplosions();
-                UpdateAsteroids();
-                UpdateCollision();
-                hud.Update();
-
-                if (!player.IsVisible)
-                {
-                    gameMode = GameMode.End;
-                    screenEnd.SetScore(player.Score);   // на другой экран передаем score
-                }
+                UpdateGame(gameTime);
 
                 break;
 
@@ -177,9 +168,41 @@ public class Game1 : Game
         base.Draw(gameTime);
     }
 
+    private void UpdateGame(GameTime gameTime)
+    {
+        player.Update(Content, gameTime);
+        space.Update();
+        UpdateExplosions();
+        UpdateAsteroids();
+        UpdateCollision();
+        hud.Update();
+
+        if (!player.IsVisible)
+        {
+            gameMode = GameMode.End;
+            screenEnd.UpdateUI(player.Score, player.Distance, player.TimeInGame);   // на другой экран передаем score
+        }
+
+        // run % 2000 => 0
+
+        if (player.TimeInGame % 5 == 0)
+        {
+            float delta = 1;   // 1.2f
+
+            foreach (var asteroid in asteroids)
+            {
+                asteroid.Speed += delta;
+            }
+
+            space.Speed += delta;
+        }
+    }
+
 
     private void UpdateCollision()
     {
+        hud.UpdateUI(player.Health, player.Distance, player.TimeInGame);
+
         // COLLISION
         for (int i = 0; i < asteroids.Count; i++)
         {
@@ -193,7 +216,6 @@ public class Game1 : Game
                 asteroids[i].IsVisible = false;
 
                 player.Damage();
-                hud.UpdateUI(player.Health);
             }
 
             // астеройд столкнулся с пулькой
@@ -269,8 +291,26 @@ public class Game1 : Game
     public void Reset()
     {
         player.Reset();
-        hud.UpdateUI(player.Health);
+        hud.UpdateUI(player.Health, player.Distance, player.TimeInGame);
         asteroids.Clear();
         explosions.Clear();
+
+        space.Speed = 1;
+    }
+
+    public void SaveData(double gameTime)
+    {
+        string data = "data.save";
+
+        StreamWriter writer = new StreamWriter(data);
+
+        writer.WriteLine(gameTime);
+
+        writer.Close();
+    }
+
+    public void LoadData()
+    {
+
     }
 }

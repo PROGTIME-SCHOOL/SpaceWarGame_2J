@@ -14,6 +14,12 @@ namespace SpaceWarGame_2J.Classes
         private Vector2 position2;
         private float speed;
 
+        public float Speed
+        {
+            get { return speed; }
+            set { speed = value; }
+        }
+
         public Space()
         {
             texture = null;

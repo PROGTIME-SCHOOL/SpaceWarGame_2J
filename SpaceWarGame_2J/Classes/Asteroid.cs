@@ -14,6 +14,12 @@ namespace SpaceWarGame_2J.Classes
         private Rectangle collision;
         private bool isVisible = true;
 
+        public float Speed
+        {
+            get { return speed; }
+            set { speed = value; }
+        }
+
         public bool IsVisible
         {
             get { return isVisible; }

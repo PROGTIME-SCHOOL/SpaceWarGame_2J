@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 using System.Collections.Generic;      // LIST
+using System;
 
 namespace SpaceWarGame_2J.Classes
 {
@@ -18,12 +19,28 @@ namespace SpaceWarGame_2J.Classes
 
         private Rectangle collision;
 
+        private int distance = 0;   // сколько корабль пролетит
+        private double timeInGame = 0;   // сколько времени провел в игре
+
         // weapon
         List<Bullet> bulletList = new List<Bullet>();
         int time = 0;
         int duration = 30;   // через сколько итераций вылетает пулька 500 мс
 
         // properties
+
+        public float Speed
+        {
+            get { return speed; }
+            set { speed = value; }
+        }
+
+        public int Distance { get { return distance; } }
+
+        public double TimeInGame
+        {
+            get { return Math.Round(timeInGame, 2); }
+        }
 
         public int Score
         {
@@ -70,8 +87,14 @@ namespace SpaceWarGame_2J.Classes
             }
         }
 
-        public void Update(ContentManager manager)
+        public void Update(ContentManager manager, GameTime gameTime)
         {
+            timeInGame += gameTime.ElapsedGameTime.TotalSeconds;
+            distance += (int)speed;
+           
+            //System.Diagnostics.Debug.WriteLine("My TIME: " + Math.Round(timeInGame, 2));
+
+
             collision =
                 new Rectangle((int)position.X, (int)position.Y, texture.Width, texture.Height);
 
@@ -167,6 +190,9 @@ namespace SpaceWarGame_2J.Classes
             isVisible = true;
             bulletList.Clear();
             score = 0;
+
+            distance = 0;
+            timeInGame = 0;
         }
     }
 }

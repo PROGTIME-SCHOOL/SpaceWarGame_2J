@@ -12,6 +12,8 @@ namespace SpaceWarGame_2J.Classes
 		private Label labelHeader;
 		private Label lblScore;
 		private Label lblInfo;
+		private Label lblDistance;
+		private Label lblGameTime;
 
 		KeyboardState keyboardState;
 		KeyboardState prevKeyboardState;
@@ -19,8 +21,12 @@ namespace SpaceWarGame_2J.Classes
         public ScreenEnd()
 		{
             labelHeader = new Label("THE END", new Vector2(350, 150), Color.White);
+
 			lblScore = new Label("Score: 400", new Vector2(345, 200), Color.White);
-            lblInfo = new Label("Press Enter to continue...", new Vector2(300, 250), Color.Orange);
+            lblDistance = new Label("Distance: 0", new Vector2(345, 220), Color.White);
+            lblGameTime = new Label("Game Time: 0", new Vector2(345, 240), Color.White);
+
+            lblInfo = new Label("Press Enter to continue...", new Vector2(300, 290), Color.Orange);
         }
 
 		public void Update()
@@ -41,6 +47,8 @@ namespace SpaceWarGame_2J.Classes
             labelHeader.LoadContent(manager);
 			lblScore.LoadContent(manager);
             lblInfo.LoadContent(manager);
+			lblDistance.LoadContent(manager);
+			lblGameTime.LoadContent(manager);
         }
 
 		public void Draw(SpriteBatch spriteBatch)
@@ -48,11 +56,16 @@ namespace SpaceWarGame_2J.Classes
             labelHeader.Draw(spriteBatch);
 			lblScore.Draw(spriteBatch);
             lblInfo.Draw(spriteBatch);
+
+			lblDistance.Draw(spriteBatch);
+			lblGameTime.Draw(spriteBatch);
         }
 
-		public void SetScore(int score)
+		public void UpdateUI(int score, int distance, double gameTime)
 		{
 			lblScore.text = "Score: " + score.ToString();
+			lblDistance.text = "Distance: " + distance.ToString();
+			lblGameTime.text = "Game Time: " + gameTime.ToString();
         }
 	}
 }
